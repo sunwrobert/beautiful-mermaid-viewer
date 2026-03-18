@@ -5,10 +5,11 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview",
+    "preview": "pnpm run build && wrangler dev",
     "typecheck": "tsc --noEmit",
     "format": "prettier -w .",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "deploy": "pnpm run build && wrangler deploy"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.1",
@@ -19,6 +20,7 @@
     "tailwindcss": "^4.2.1"
   },
   "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.29.1",
     "@eslint/js": "^9.39.4",
     "@foldkit/vite-plugin": "^0.2.3",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
@@ -27,6 +29,7 @@
     "eslint": "^9.39.4",
     "prettier": "^3.8.1",
     "typescript": "^5.9.3",
-    "vite": "^7.3.1"
+    "vite": "^7.3.1",
+    "wrangler": "^4.75.0"
   }
 }
