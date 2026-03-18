@@ -8,6 +8,9 @@ const SplitterDrag = S.Struct({
 export const ColorMode = S.Literal('Light', 'Dark')
 export type ColorMode = typeof ColorMode.Type
 
+export const CopyStatus = S.Literal('Idle', 'Copied', 'Failed')
+export type CopyStatus = typeof CopyStatus.Type
+
 export const UiModel = S.Struct({
   mermaidSource: S.String,
   renderedSvg: S.String,
@@ -16,5 +19,6 @@ export const UiModel = S.Struct({
   maybeSplitterDrag: S.OptionFromSelf(SplitterDrag),
   zoomLevel: S.Number,
   colorMode: ColorMode,
+  copyStatus: CopyStatus,
 })
 export type UiModel = typeof UiModel.Type

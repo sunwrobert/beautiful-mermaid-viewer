@@ -1,10 +1,13 @@
-import { Effect, Match as M, Number, Option } from 'effect'
+import { Effect, Match as M, Option } from 'effect'
 import { Command } from 'foldkit/command'
 import { evo } from 'foldkit/struct'
 
+import { encodeDiagram } from './codec'
 import {
   CompletedColorModePersist,
+  CompletedCopyLink,
   CompletedSplitterPersist,
+  ResetCopyStatus,
   TriggeredMermaidRender,
   type UiMessage,
 } from './message'
@@ -17,6 +20,7 @@ const MIN_PANEL_WIDTH = 200
 const MIN_ZOOM = 0.25
 const MAX_ZOOM = 4
 const ZOOM_FACTOR = 1.25
+const COPY_FEEDBACK_MS = 2000
 
 const toggleColorMode = (mode: ColorMode): ColorMode =>
   mode === 'Light' ? 'Dark' : 'Light'
@@ -47,6 +51,8 @@ export const uiUpdate = (model: UiModel, message: UiMessage): UiUpdateReturn =>
         if (generation !== model.renderGeneration) {
           return [model, []]
         }
+        const encoded = encodeDiagram(model.mermaidSource)
+        window.history.replaceState(null, '', `#${encoded}`)
         return [
           evo(model, {
             renderedSvg: () =>
@@ -122,5 +128,35 @@ export const uiUpdate = (model: UiModel, message: UiMessage): UiUpdateReturn =>
 
       CompletedSplitterPersist: () => [model, []],
       CompletedColorModePersist: () => [model, []],
+
+      ClickedCopyLink: () => {
+        const encoded = encodeDiagram(model.mermaidSource)
+        const url = `${window.location.origin}${window.location.pathname}#${encoded}`
+        return [
+          model,
+          [
+            Effect.tryPromise(() => navigator.clipboard.writeText(url)).pipe(
+              Effect.map(() => CompletedCopyLink({ success: true })),
+              Effect.catchAll(() =>
+                Effect.succeed(CompletedCopyLink({ success: false })),
+              ),
+            ),
+          ],
+        ]
+      },
+
+      CompletedCopyLink: ({ success }) => {
+        const status = success ? 'Copied' : 'Failed'
+        return [
+          evo(model, { copyStatus: () => status }),
+          [
+            Effect.succeed(ResetCopyStatus()).pipe(
+              Effect.delay(COPY_FEEDBACK_MS),
+            ),
+          ],
+        ]
+      },
+
+      ResetCopyStatus: () => [evo(model, { copyStatus: () => 'Idle' }), []],
     }),
   )

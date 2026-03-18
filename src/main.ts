@@ -9,6 +9,7 @@ import { Url, toString as urlToString } from 'foldkit/url'
 
 import { uiInit } from './init'
 import {
+  ClickedCopyLink,
   ClickedZoomIn,
   ClickedZoomOut,
   ClickedZoomReset,
@@ -238,6 +239,28 @@ const zoomControlsView = (model: Model): Html =>
     ],
   )
 
+const copyLinkLabel = (model: Model): string => {
+  switch (model.uiModel.copyStatus) {
+    case 'Copied':
+      return 'Copied!'
+    case 'Failed':
+      return 'Failed'
+    default:
+      return 'Copy Link'
+  }
+}
+
+const copyLinkView = (model: Model): Html =>
+  button(
+    [
+      Class(
+        'px-3 py-1 text-xs font-medium rounded cursor-pointer border border-gray-200 text-gray-600 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800',
+      ),
+      OnClick(toUiMessage(ClickedCopyLink())),
+    ],
+    [copyLinkLabel(model)],
+  )
+
 const colorModeToggleView = (model: Model): Html =>
   button(
     [
@@ -326,7 +349,10 @@ const view = (model: Model): Html =>
               ),
             ],
           ),
-          colorModeToggleView(model),
+          div(
+            [Class('flex items-center gap-2')],
+            [copyLinkView(model), colorModeToggleView(model)],
+          ),
         ],
       ),
       div(

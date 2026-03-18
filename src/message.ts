@@ -20,6 +20,11 @@ export const TriggeredMermaidRender = m('TriggeredMermaidRender', {
 export const ToggledColorMode = m('ToggledColorMode')
 export const CompletedSplitterPersist = m('CompletedSplitterPersist')
 export const CompletedColorModePersist = m('CompletedColorModePersist')
+export const ClickedCopyLink = m('ClickedCopyLink')
+export const CompletedCopyLink = m('CompletedCopyLink', {
+  success: S.Boolean,
+})
+export const ResetCopyStatus = m('ResetCopyStatus')
 
 export const UiMessage = S.Union(
   UpdatedMermaidSource,
@@ -33,5 +38,8 @@ export const UiMessage = S.Union(
   ToggledColorMode,
   CompletedSplitterPersist,
   CompletedColorModePersist,
+  ClickedCopyLink,
+  CompletedCopyLink,
+  ResetCopyStatus,
 )
 export type UiMessage = typeof UiMessage.Type
